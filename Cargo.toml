@@ -3,4 +3,15 @@ name = "zem-intercessory-prayer-srv"
 version = "0.1.0"
 edition = "2024"
 
+
 [dependencies]
+anyhow = "1.0.102"
+axum = "0.8.8"
+chrono = "0.4.44"
+regex = "1.12.3"
+serde = { version = "1.0.228", features = ["derive"] }
+thiserror = "2.0.18"
+tokio = { version = "1.49.0", features = ["full"] }
+tracing-subscriber = "0.3.22"
+uuid = { version = "1.21.0", features = ["serde", "v4"] }
+
