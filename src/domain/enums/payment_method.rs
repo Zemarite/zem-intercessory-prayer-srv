@@ -73,14 +73,38 @@ mod tests {
 
     #[test]
     fn test_payment_method_from_str() {
-        assert_eq!(PaymentMethod::from_str("Credit Card"), Some(PaymentMethod::CreditCard));
-        assert_eq!(PaymentMethod::from_str("creditcard"), Some(PaymentMethod::CreditCard));
-        assert_eq!(PaymentMethod::from_str("debit card"), Some(PaymentMethod::DebitCard));
-        assert_eq!(PaymentMethod::from_str("bank transfer"), Some(PaymentMethod::BankTransfer));
-        assert_eq!(PaymentMethod::from_str("ACH"), Some(PaymentMethod::BankTransfer));
-        assert_eq!(PaymentMethod::from_str("paypal"), Some(PaymentMethod::PayPal));
-        assert_eq!(PaymentMethod::from_str("apple pay"), Some(PaymentMethod::ApplePay));
-        assert_eq!(PaymentMethod::from_str("google pay"), Some(PaymentMethod::GooglePay));
+        assert_eq!(
+            PaymentMethod::from_str("Credit Card"),
+            Some(PaymentMethod::CreditCard)
+        );
+        assert_eq!(
+            PaymentMethod::from_str("creditcard"),
+            Some(PaymentMethod::CreditCard)
+        );
+        assert_eq!(
+            PaymentMethod::from_str("debit card"),
+            Some(PaymentMethod::DebitCard)
+        );
+        assert_eq!(
+            PaymentMethod::from_str("bank transfer"),
+            Some(PaymentMethod::BankTransfer)
+        );
+        assert_eq!(
+            PaymentMethod::from_str("ACH"),
+            Some(PaymentMethod::BankTransfer)
+        );
+        assert_eq!(
+            PaymentMethod::from_str("paypal"),
+            Some(PaymentMethod::PayPal)
+        );
+        assert_eq!(
+            PaymentMethod::from_str("apple pay"),
+            Some(PaymentMethod::ApplePay)
+        );
+        assert_eq!(
+            PaymentMethod::from_str("google pay"),
+            Some(PaymentMethod::GooglePay)
+        );
         assert_eq!(PaymentMethod::from_str("cash"), Some(PaymentMethod::Cash));
         assert_eq!(PaymentMethod::from_str("check"), Some(PaymentMethod::Check));
         assert_eq!(PaymentMethod::from_str("invalid"), None);

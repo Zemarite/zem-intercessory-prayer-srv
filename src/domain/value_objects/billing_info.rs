@@ -1,5 +1,5 @@
-use crate::domain::errors::DomainError;
 use crate::domain::enums::payment_method::PaymentMethod;
+use crate::domain::errors::DomainError;
 use crate::domain::value_objects::email::Email;
 
 /// Represents billing information as a value object in the domain.
@@ -44,10 +44,9 @@ impl BillingInfo {
         billing_email: Email,
         tax_id: Option<String>,
     ) -> Result<Self, DomainError> {
-        let payment_method = PaymentMethod::from_str(payment_method_str)
-            .ok_or_else(|| DomainError::ValidationError(
-                format!("Invalid payment method: {}", payment_method_str)
-            ))?;
+        let payment_method = PaymentMethod::from_str(payment_method_str).ok_or_else(|| {
+            DomainError::ValidationError(format!("Invalid payment method: {}", payment_method_str))
+        })?;
 
         Self::new(payment_method, billing_email, tax_id)
     }
@@ -77,7 +76,8 @@ mod tests {
     fn test_billing_info_creation_without_tax_id() {
         let billing_email = Email::new("billing@example.com".to_string()).unwrap();
 
-        let billing_info = BillingInfo::new(PaymentMethod::BankTransfer, billing_email, None).unwrap();
+        let billing_info =
+            BillingInfo::new(PaymentMethod::BankTransfer, billing_email, None).unwrap();
 
         assert_eq!(billing_info.payment_method, PaymentMethod::BankTransfer);
         assert_eq!(billing_info.tax_id, None);
@@ -116,11 +116,7 @@ mod tests {
     fn test_billing_info_from_invalid_payment_method_str() {
         let billing_email = Email::new("billing@example.com".to_string()).unwrap();
 
-        let result = BillingInfo::from_payment_method_str(
-            "invalid method",
-            billing_email,
-            None,
-        );
+        let result = BillingInfo::from_payment_method_str("invalid method", billing_email, None);
 
         assert_eq!(
             result.unwrap_err(),
