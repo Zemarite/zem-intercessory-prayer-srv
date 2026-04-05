@@ -97,7 +97,11 @@ mod tests {
         let billing_email = Email::new("billing@example.com".to_string()).unwrap();
         let long_tax_id = "T".repeat(51);
 
-        let result = BillingInfo::new("Bank Transfer".to_string(), billing_email, Some(long_tax_id));
+        let result = BillingInfo::new(
+            "Bank Transfer".to_string(),
+            billing_email,
+            Some(long_tax_id),
+        );
 
         assert_eq!(
             result.unwrap_err(),

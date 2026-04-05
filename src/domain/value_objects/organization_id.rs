@@ -22,9 +22,9 @@ impl OrganizationId {
 
     /// Parses an organization identifier from its string representation.
     pub fn parse(value: &str) -> Result<Self, DomainError> {
-        Uuid::parse_str(value).map(Self).map_err(|_| {
-            DomainError::ValidationError(format!("Invalid organization ID: {value}"))
-        })
+        Uuid::parse_str(value)
+            .map(Self)
+            .map_err(|_| DomainError::ValidationError(format!("Invalid organization ID: {value}")))
     }
 
     /// Returns the wrapped UUID value.
@@ -75,9 +75,7 @@ mod tests {
 
         assert_eq!(
             error,
-            DomainError::ValidationError(
-                "Invalid organization ID: not-a-uuid".to_string()
-            )
+            DomainError::ValidationError("Invalid organization ID: not-a-uuid".to_string())
         );
     }
 

@@ -22,9 +22,9 @@ impl UserId {
 
     /// Parses a user identifier from its string representation.
     pub fn parse(value: &str) -> Result<Self, DomainError> {
-        Uuid::parse_str(value).map(Self).map_err(|_| {
-            DomainError::ValidationError(format!("Invalid user ID: {value}"))
-        })
+        Uuid::parse_str(value)
+            .map(Self)
+            .map_err(|_| DomainError::ValidationError(format!("Invalid user ID: {value}")))
     }
 
     /// Returns the wrapped UUID value.
