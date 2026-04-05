@@ -1,3 +1,3 @@
 pub mod common;
-pub mod plant;
-pub mod user;
+pub mod members;
+pub mod organizations;
