@@ -10,13 +10,13 @@ use crate::domain::value_objects::organization_id::OrganizationId;
 /// Entities have identity and are compared by their ID, not by value.
 #[derive(Debug, Clone)]
 pub struct Organization {
-    pub id: OrganizationId,
-    pub name: String,
-    pub address: Address,
-    pub contact_info: ContactInfo,
-    pub billing: Option<BillingInfo>,
-    pub created_at: OffsetDateTime,
-    pub updated_at: OffsetDateTime,
+    id: OrganizationId,
+    name: String,
+    address: Address,
+    contact_info: ContactInfo,
+    billing: Option<BillingInfo>,
+    created_at: OffsetDateTime,
+    updated_at: OffsetDateTime,
 }
 
 impl Organization {
@@ -45,6 +45,36 @@ impl Organization {
             updated_at: now,
         })
     }
+
+    // region: Getters for encapsulation
+    pub fn id(&self) -> &OrganizationId {
+        &self.id
+    }
+
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn address(&self) -> &Address {
+        &self.address
+    }
+
+    pub fn contact_info(&self) -> &ContactInfo {
+        &self.contact_info
+    }
+
+    pub fn billing(&self) -> Option<&BillingInfo> {
+        self.billing.as_ref()
+    }
+
+    pub fn created_at(&self) -> &OffsetDateTime {
+        &self.created_at
+    }
+
+    pub fn updated_at(&self) -> &OffsetDateTime {
+        &self.updated_at
+    }
+    // endregion:Getters for encapsulation
 
     // Business behavior / methods
     /// Updates the organization's name and sets the updated_at timestamp.
@@ -122,9 +152,9 @@ mod tests {
         )
         .unwrap();
 
-        assert_eq!(org.name, "Test Organization");
-        assert!(org.billing.is_some());
-        assert_eq!(org.created_at, org.updated_at);
+        assert_eq!(org.name(), "Test Organization");
+        assert!(org.billing().is_some());
+        assert_eq!(org.created_at(), org.updated_at());
     }
 
     #[test]
@@ -199,11 +229,11 @@ mod tests {
         let mut org =
             Organization::new("Old Name".to_string(), address, contact_info, None).unwrap();
 
-        let old_updated_at = org.updated_at;
+        let old_updated_at = org.updated_at().clone();
 
         org.update_name("New Name".to_string()).unwrap();
 
-        assert_eq!(org.name, "New Name");
-        assert!(org.updated_at > old_updated_at);
+        assert_eq!(org.name(), "New Name");
+        assert!(org.updated_at() > &old_updated_at);
     }
 }

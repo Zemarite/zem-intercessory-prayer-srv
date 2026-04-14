@@ -375,14 +375,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "fluidvalidation"
-version = "0.1.0"
-dependencies = [
- "once_cell",
- "regex",
-]
-
-[[package]]
 name = "flume"
 version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2303,7 +2295,6 @@ dependencies = [
  "async-trait",
  "axum",
  "derive_more",
- "fluidvalidation",
  "regex",
  "serde",
  "sqlx",
