@@ -1,12 +1,25 @@
-use thiserror::Error;
+use derive_more::{Display, From};
+pub type Result<T> = core::result::Result<T, DomainError>;
 
-/// Domain-level errors for the application.
-/// These represent business logic violations and validation errors.
-#[derive(Error, Debug, PartialEq)]
+#[derive(Debug, From, PartialEq)]
 pub enum DomainError {
-    #[error("Invalid email format: {0}")]
+    InvalidAddress(String),
+    InvalidContactInfo(String),
+    InvalidBillingInfo(String),
     InvalidEmail(String),
 
-    #[error("Validation error: {0}")]
+    #[from(String,&str, &String)]
     ValidationError(String),
 }
+
+// region:    --- Error Boilerplate
+
+impl core::fmt::Display for DomainError {
+    fn fmt(&self, fmt: &mut core::fmt::Formatter) -> core::result::Result<(), core::fmt::Error> {
+        write!(fmt, "{self:?}")
+    }
+}
+
+impl std::error::Error for DomainError {}
+
+// endregion: --- Error Boilerplate

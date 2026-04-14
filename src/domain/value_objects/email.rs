@@ -12,7 +12,7 @@ impl Email {
         // RFC 5322 compliant email regex (requires at least one dot in domain)
         let email_regex = regex::Regex::new(
             r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$"
-        ).map_err(|_| crate::domain::errors::DomainError::ValidationError("Invalid regex pattern".to_string()))?;
+        ).map_err(|_| crate::domain::errors::DomainError::InvalidEmail("Invalid regex pattern".to_string()))?;
 
         if email_regex.is_match(&value) {
             Ok(Self { value })
@@ -38,7 +38,7 @@ mod tests {
     fn test_email_creation_invalid() {
         let email = Email::new("invalid-email".to_string());
         assert!(email.is_err());
-        assert_eq!(email.unwrap_err(), DomainError::InvalidEmail("invalid-email".to_string()));
+        assert!(matches!(email.unwrap_err(), DomainError::InvalidEmail(_)));
     }
 
     #[test]

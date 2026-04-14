@@ -24,7 +24,7 @@ impl BillingInfo {
 
         if let Some(ref value) = normalized_tax_id {
             if value.len() > 50 {
-                return Err(DomainError::ValidationError(
+                return Err(DomainError::InvalidBillingInfo(
                     "Tax ID is too long (max 50 characters)".to_string(),
                 ));
             }
@@ -45,7 +45,10 @@ impl BillingInfo {
         tax_id: Option<String>,
     ) -> Result<Self, DomainError> {
         let payment_method = PaymentMethod::from_str(payment_method_str).ok_or_else(|| {
-            DomainError::ValidationError(format!("Invalid payment method: {}", payment_method_str))
+            DomainError::InvalidBillingInfo(format!(
+                "Invalid payment method: {}",
+                payment_method_str
+            ))
         })?;
 
         Self::new(payment_method, billing_email, tax_id)
@@ -90,9 +93,13 @@ mod tests {
 
         let result = BillingInfo::new(PaymentMethod::PayPal, billing_email, Some(long_tax_id));
 
+        // assert!(
+        //     matches!(result.unwrap_err(),
+        //     DomainError::InvalidBillingInfo(ref msg) if msg == "Tax ID is too long (max 50 characters)")
+        // );
         assert_eq!(
             result.unwrap_err(),
-            DomainError::ValidationError("Tax ID is too long (max 50 characters)".to_string())
+            DomainError::InvalidBillingInfo("Tax ID is too long (max 50 characters)".to_string())
         );
     }
 
@@ -117,10 +124,9 @@ mod tests {
         let billing_email = Email::new("billing@example.com".to_string()).unwrap();
 
         let result = BillingInfo::from_payment_method_str("invalid method", billing_email, None);
-
         assert_eq!(
             result.unwrap_err(),
-            DomainError::ValidationError("Invalid payment method: invalid method".to_string())
+            DomainError::InvalidBillingInfo("Invalid payment method: invalid method".to_string())
         );
     }
 }

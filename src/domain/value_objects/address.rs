@@ -1,3 +1,4 @@
+use crate::domain::errors::DomainError;
 /// Represents an address as a value object in the domain.
 /// Value objects are immutable and compared by value, not identity.
 #[derive(Debug, Clone, PartialEq)]
@@ -20,64 +21,64 @@ impl Address {
         state_province: String,
         postal_code: String,
         country: String,
-    ) -> Result<Self, crate::domain::errors::DomainError> {
+    ) -> Result<Self, DomainError> {
         // Validate required fields are not empty
         if street_line1.trim().is_empty() {
-            return Err(crate::domain::errors::DomainError::ValidationError(
+            return Err(DomainError::InvalidAddress(
                 "Street line 1 cannot be empty".to_string(),
             ));
         }
         if city.trim().is_empty() {
-            return Err(crate::domain::errors::DomainError::ValidationError(
+            return Err(DomainError::InvalidAddress(
                 "City cannot be empty".to_string(),
             ));
         }
         if state_province.trim().is_empty() {
-            return Err(crate::domain::errors::DomainError::ValidationError(
+            return Err(DomainError::InvalidAddress(
                 "State/Province cannot be empty".to_string(),
             ));
         }
         if postal_code.trim().is_empty() {
-            return Err(crate::domain::errors::DomainError::ValidationError(
+            return Err(DomainError::InvalidAddress(
                 "Postal code cannot be empty".to_string(),
             ));
         }
         if country.trim().is_empty() {
-            return Err(crate::domain::errors::DomainError::ValidationError(
+            return Err( DomainError::InvalidAddress(
                 "Country cannot be empty".to_string(),
             ));
         }
 
         // Validate reasonable length limits
         if street_line1.len() > 100 {
-            return Err(crate::domain::errors::DomainError::ValidationError(
+            return Err(DomainError::InvalidAddress(
                 "Street line 1 is too long (max 100 characters)".to_string(),
             ));
         }
         if let Some(ref line2) = street_line2 {
             if line2.len() > 100 {
-                return Err(crate::domain::errors::DomainError::ValidationError(
+                return Err(DomainError::InvalidAddress(
                     "Street line 2 is too long (max 100 characters)".to_string(),
                 ));
             }
         }
         if city.len() > 50 {
-            return Err(crate::domain::errors::DomainError::ValidationError(
+            return Err(DomainError::InvalidAddress(
                 "City is too long (max 50 characters)".to_string(),
             ));
         }
         if state_province.len() > 50 {
-            return Err(crate::domain::errors::DomainError::ValidationError(
+            return Err(DomainError::InvalidAddress(
                 "State/Province is too long (max 50 characters)".to_string(),
             ));
         }
         if postal_code.len() > 20 {
-            return Err(crate::domain::errors::DomainError::ValidationError(
+            return Err(DomainError::InvalidAddress(
                 "Postal code is too long (max 20 characters)".to_string(),
             ));
         }
         if country.len() > 50 {
-            return Err(crate::domain::errors::DomainError::ValidationError(
+            return Err(DomainError::InvalidAddress(
                 "Country is too long (max 50 characters)".to_string(),
             ));
         }
