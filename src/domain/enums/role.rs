@@ -3,7 +3,7 @@
 pub enum Role {
     Member,
     Intercessor,
-    Leader,
+    Pastor,
     Admin,
 }
 
@@ -15,17 +15,17 @@ mod tests {
     fn test_role_variants() {
         assert_eq!(Role::Member, Role::Member);
         assert_eq!(Role::Intercessor, Role::Intercessor);
-        assert_eq!(Role::Leader, Role::Leader);
+        assert_eq!(Role::Pastor, Role::Pastor);
         assert_eq!(Role::Admin, Role::Admin);
 
         assert_ne!(Role::Member, Role::Intercessor);
-        assert_ne!(Role::Intercessor, Role::Leader);
-        assert_ne!(Role::Leader, Role::Admin);
+        assert_ne!(Role::Intercessor, Role::Pastor);
+        assert_ne!(Role::Pastor, Role::Admin);
     }
 
     #[test]
     fn test_role_clone() {
-        let role = Role::Leader;
+        let role = Role::Pastor;
         let cloned = role.clone();
         assert_eq!(role, cloned);
     }
@@ -38,8 +38,8 @@ mod tests {
         let role = Role::Intercessor;
         assert_eq!(format!("{:?}", role), "Intercessor");
 
-        let role = Role::Leader;
-        assert_eq!(format!("{:?}", role), "Leader");
+        let role = Role::Pastor;
+        assert_eq!(format!("{:?}", role), "Pastor");
 
         let role = Role::Admin;
         assert_eq!(format!("{:?}", role), "Admin");
