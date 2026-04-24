@@ -296,7 +296,9 @@ mod tests {
         )
         .unwrap();
 
-        request.update_status(PrayerRequestStatus::Answered).unwrap();
+        request
+            .update_status(PrayerRequestStatus::Answered)
+            .unwrap();
         assert_eq!(request.status(), &PrayerRequestStatus::Answered);
     }
 
@@ -334,7 +336,9 @@ mod tests {
         )
         .unwrap();
 
-        request.update_description("New Description".to_string()).unwrap();
+        request
+            .update_description("New Description".to_string())
+            .unwrap();
         assert_eq!(request.description(), "New Description");
     }
 

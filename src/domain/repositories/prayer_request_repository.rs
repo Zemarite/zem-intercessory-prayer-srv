@@ -18,8 +18,14 @@ pub trait PrayerRequestRepository {
     async fn find_by_id(&self, id: &PrayerRequestId) -> Result<Option<PrayerRequest>, DomainError>;
 
     /// Finds all prayer requests belonging to a specific church.
-    async fn find_by_church_id(&self, church_id: &ChurchId) -> Result<Vec<PrayerRequest>, DomainError>;
+    async fn find_by_church_id(
+        &self,
+        church_id: &ChurchId,
+    ) -> Result<Vec<PrayerRequest>, DomainError>;
 
     /// Finds all prayer requests belonging to a specific organization.
-    async fn find_by_organization_id(&self, organization_id: &OrganizationId) -> Result<Vec<PrayerRequest>, DomainError>;
+    async fn find_by_organization_id(
+        &self,
+        organization_id: &OrganizationId,
+    ) -> Result<Vec<PrayerRequest>, DomainError>;
 }

@@ -22,9 +22,9 @@ impl PrayerRequestId {
 
     /// Parses a prayer request identifier from its string representation.
     pub fn parse(value: &str) -> Result<Self, DomainError> {
-        Uuid::parse_str(value)
-            .map(Self)
-            .map_err(|_| DomainError::ValidationError(format!("Invalid prayer request ID: {value}")))
+        Uuid::parse_str(value).map(Self).map_err(|_| {
+            DomainError::ValidationError(format!("Invalid prayer request ID: {value}"))
+        })
     }
 
     /// Returns the wrapped UUID value.
