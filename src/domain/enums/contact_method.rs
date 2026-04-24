@@ -6,6 +6,28 @@ pub enum ContactMethod {
     Sms,
 }
 
+impl ContactMethod {
+    /// Returns a human-readable string representation of the contact method.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            ContactMethod::Email => "Email",
+            ContactMethod::Phone => "Phone",
+            ContactMethod::Sms => "Sms",
+        }
+    }
+
+    /// Attempts to create a ContactMethod from a string representation.
+    /// Case-insensitive matching.
+    pub fn from_str(s: &str) -> Option<Self> {
+        match s.trim().to_lowercase().as_str() {
+            "email" => Some(ContactMethod::Email),
+            "phone" => Some(ContactMethod::Phone),
+            "sms" | "text" => Some(ContactMethod::Sms),
+            _ => None,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -38,5 +60,24 @@ mod tests {
 
         let method = ContactMethod::Sms;
         assert_eq!(format!("{:?}", method), "Sms");
+    }
+
+    #[test]
+    fn test_contact_method_as_str() {
+        assert_eq!(ContactMethod::Email.as_str(), "Email");
+        assert_eq!(ContactMethod::Phone.as_str(), "Phone");
+        assert_eq!(ContactMethod::Sms.as_str(), "Sms");
+    }
+
+    #[test]
+    fn test_contact_method_from_str() {
+        assert_eq!(ContactMethod::from_str("email"), Some(ContactMethod::Email));
+        assert_eq!(ContactMethod::from_str("Email"), Some(ContactMethod::Email));
+        assert_eq!(ContactMethod::from_str("phone"), Some(ContactMethod::Phone));
+        assert_eq!(ContactMethod::from_str("Phone"), Some(ContactMethod::Phone));
+        assert_eq!(ContactMethod::from_str("sms"), Some(ContactMethod::Sms));
+        assert_eq!(ContactMethod::from_str("Sms"), Some(ContactMethod::Sms));
+        assert_eq!(ContactMethod::from_str("text"), Some(ContactMethod::Sms));
+        assert_eq!(ContactMethod::from_str("invalid"), None);
     }
 }
