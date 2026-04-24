@@ -1,10 +1,8 @@
 use time::OffsetDateTime;
 
 use crate::domain::errors::DomainError;
-use crate::domain::value_objects::address::Address;
-use crate::domain::value_objects::billing_info::BillingInfo;
-use crate::domain::value_objects::contact_info::ContactInfo;
-use crate::domain::value_objects::organization_id::OrganizationId;
+
+use crate::domain::value_objects::{Address, BillingInfo, ContactInfo, OrganizationId};
 
 /// Represents an Organization entity in the domain.
 /// Entities have identity and are compared by their ID, not by value.
@@ -120,9 +118,8 @@ impl Eq for Organization {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::domain::enums::contact_method::ContactMethod;
-    use crate::domain::enums::payment_method::PaymentMethod;
-    use crate::domain::value_objects::email::Email;
+    use crate::domain::enums::{ContactMethod, PaymentMethod};
+    use crate::domain::value_objects::Email;
 
     #[test]
     fn test_organization_creation() {

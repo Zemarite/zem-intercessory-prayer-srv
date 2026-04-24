@@ -1,4 +1,4 @@
-use crate::domain::enums::contact_method::ContactMethod;
+use crate::domain::enums::ContactMethod;
 use crate::domain::errors::DomainError;
 use crate::domain::value_objects::email::Email;
 
