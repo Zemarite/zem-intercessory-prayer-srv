@@ -5,11 +5,11 @@ use uuid::Uuid;
 
 use crate::domain::errors::DomainError;
 
-/// Domain identifier for a user aggregate.
+/// Domain identifier for a member aggregate.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
-pub struct UserId(Uuid);
+pub struct MemberId(Uuid);
 
-impl UserId {
+impl MemberId {
     /// Creates a user identifier from an existing UUID.
     pub fn new(value: Uuid) -> Self {
         Self(value)
@@ -33,25 +33,25 @@ impl UserId {
     }
 }
 
-impl From<Uuid> for UserId {
+impl From<Uuid> for MemberId {
     fn from(value: Uuid) -> Self {
         Self::new(value)
     }
 }
 
-impl From<UserId> for Uuid {
-    fn from(value: UserId) -> Self {
+impl From<MemberId> for Uuid {
+    fn from(value: MemberId) -> Self {
         value.value()
     }
 }
 
-impl AsRef<Uuid> for UserId {
+impl AsRef<Uuid> for MemberId {
     fn as_ref(&self) -> &Uuid {
         &self.0
     }
 }
 
-impl fmt::Display for UserId {
+impl fmt::Display for MemberId {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
     }
@@ -64,14 +64,14 @@ mod tests {
     #[test]
     fn parses_valid_user_id() {
         let uuid = Uuid::now_v7();
-        let user_id = UserId::parse(&uuid.to_string()).unwrap();
+        let user_id = MemberId::parse(&uuid.to_string()).unwrap();
 
         assert_eq!(user_id.value(), uuid);
     }
 
     #[test]
     fn rejects_invalid_user_id() {
-        let error = UserId::parse("not-a-uuid").unwrap_err();
+        let error = MemberId::parse("not-a-uuid").unwrap_err();
 
         assert_eq!(
             error,
@@ -81,8 +81,8 @@ mod tests {
 
     #[test]
     fn generates_distinct_user_ids() {
-        let first = UserId::generate();
-        let second = UserId::generate();
+        let first = MemberId::generate();
+        let second = MemberId::generate();
 
         assert_ne!(first, second);
     }

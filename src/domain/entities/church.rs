@@ -12,6 +12,7 @@ pub struct Church {
     address: Address,
     contact_info: ContactInfo,
     organization_id: OrganizationId,
+    // pastor_user_id
     created_at: OffsetDateTime,
     updated_at: OffsetDateTime,
 }

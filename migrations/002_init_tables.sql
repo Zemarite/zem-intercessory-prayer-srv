@@ -18,15 +18,11 @@ CREATE TABLE organization (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name            VARCHAR(64) NOT NULL,
 
-    -- Value Object: ContactInfo as JSONB
+    -- Value Object: as JSONB
     contact_info    JSONB NOT NULL 
                     CHECK (jsonb_typeof(contact_info) = 'object'),
-
-    -- Value Object: Address as JSONB
     address         JSONB NOT NULL 
                     CHECK (jsonb_typeof(address) = 'object'),
-
-    -- Value Object: BillingInfo as JSONB
     billing_info    JSONB NOT NULL 
                     CHECK (jsonb_typeof(billing_info) = 'object'),
 
@@ -36,13 +32,16 @@ CREATE TABLE organization (
 
 CREATE TABLE church (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    organization_id UUID NOT NULL REFERENCES organization(id) ON DELETE CASCADE,
+    pastor_user_id  UUID, -- FK added later  
+
     name            VARCHAR(64) NOT NULL,
+    
+    -- Value Object: as JSONB
     address         JSONB NOT NULL 
                     CHECK (jsonb_typeof(address) = 'object'),
     contact_info    JSONB NOT NULL 
                     CHECK (jsonb_typeof(contact_info) = 'object'),
-    organization_id UUID NOT NULL REFERENCES organization(id) ON DELETE CASCADE,
-    pastor_user_id  UUID, -- FK added later
 
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -50,17 +49,16 @@ CREATE TABLE church (
 
 CREATE TABLE member (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    church_id       UUID NOT NULL REFERENCES church(id) ON DELETE RESTRICT,    
     name            VARCHAR(64) NOT NULL,
 
-    -- Value Object: ContactInfo as JSONB
+    -- Value Object: as JSONB
     contact_info    JSONB NOT NULL 
                     CHECK (jsonb_typeof(contact_info) = 'object'),
-
-    -- Value Object: Address as JSONB
     address         JSONB NOT NULL 
                     CHECK (jsonb_typeof(address) = 'object'),
 
-    church_id       UUID NOT NULL REFERENCES church(id) ON DELETE RESTRICT,
+  
     role            VARCHAR(32) NOT NULL DEFAULT 'MEMBER' 
                    CHECK (role IN ('MEMBER', 'INTERCESSOR', 'ADMIN', 'PASTOR')),
 
