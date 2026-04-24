@@ -1,14 +1,14 @@
-use crate::domain::enums::payment_method::PaymentMethod;
-use crate::domain::errors::DomainError;
+use crate::domain::enums::PaymentMethod;
+use crate::domain::errors::{DomainError, Result};
 use crate::domain::value_objects::email::Email;
 
 /// Represents billing information as a value object in the domain.
 /// Value objects are immutable and compared by value, not identity.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone)]
 pub struct BillingInfo {
-    pub payment_method: PaymentMethod,
-    pub billing_email: Email,
-    pub tax_id: Option<String>,
+    payment_method: PaymentMethod,
+    billing_email: Email,
+    tax_id: Option<String>,
 }
 
 impl BillingInfo {
@@ -17,7 +17,7 @@ impl BillingInfo {
         payment_method: PaymentMethod,
         billing_email: Email,
         tax_id: Option<String>,
-    ) -> Result<Self, DomainError> {
+    ) -> Result<Self> {
         let normalized_tax_id = tax_id
             .map(|value| value.trim().to_string())
             .filter(|value| !value.is_empty());
@@ -43,7 +43,7 @@ impl BillingInfo {
         payment_method_str: &str,
         billing_email: Email,
         tax_id: Option<String>,
-    ) -> Result<Self, DomainError> {
+    ) -> Result<Self> {
         let payment_method = PaymentMethod::from_str(payment_method_str).ok_or_else(|| {
             DomainError::InvalidBillingInfo(format!(
                 "Invalid payment method: {}",
@@ -53,7 +53,35 @@ impl BillingInfo {
 
         Self::new(payment_method, billing_email, tax_id)
     }
+
+    // Getters
+    pub fn payment_method(&self) -> &PaymentMethod {
+        &self.payment_method
+    }
+
+    pub fn billing_email(&self) -> &Email {
+        &self.billing_email
+    }
+
+    pub fn tax_id(&self) -> Option<&String> {
+        self.tax_id.as_ref()
+    }
+
+    // Business behavior / methods
+    pub fn has_tax_id(&self) -> bool {
+        self.tax_id.is_some()
+    }
 }
+
+impl PartialEq for BillingInfo {
+    fn eq(&self, other: &Self) -> bool {
+        self.payment_method == other.payment_method
+            && self.billing_email == other.billing_email
+            && self.tax_id == other.tax_id
+    }
+}
+
+impl Eq for BillingInfo {}
 
 #[cfg(test)]
 mod tests {
@@ -70,9 +98,9 @@ mod tests {
         )
         .unwrap();
 
-        assert_eq!(billing_info.payment_method, PaymentMethod::CreditCard);
-        assert_eq!(billing_info.billing_email.value, "billing@example.com");
-        assert_eq!(billing_info.tax_id, Some("TAX-12345".to_string()));
+        assert_eq!(*billing_info.payment_method(), PaymentMethod::CreditCard);
+        assert_eq!(billing_info.billing_email().value, "billing@example.com");
+        assert_eq!(billing_info.tax_id(), Some(&"TAX-12345".to_string()));
     }
 
     #[test]
@@ -82,8 +110,8 @@ mod tests {
         let billing_info =
             BillingInfo::new(PaymentMethod::BankTransfer, billing_email, None).unwrap();
 
-        assert_eq!(billing_info.payment_method, PaymentMethod::BankTransfer);
-        assert_eq!(billing_info.tax_id, None);
+        assert_eq!(*billing_info.payment_method(), PaymentMethod::BankTransfer);
+        assert_eq!(billing_info.tax_id(), None);
     }
 
     #[test]
@@ -114,9 +142,9 @@ mod tests {
         )
         .unwrap();
 
-        assert_eq!(billing_info.payment_method, PaymentMethod::CreditCard);
-        assert_eq!(billing_info.billing_email.value, "billing@example.com");
-        assert_eq!(billing_info.tax_id, Some("TAX-12345".to_string()));
+        assert_eq!(*billing_info.payment_method(), PaymentMethod::CreditCard);
+        assert_eq!(billing_info.billing_email().value, "billing@example.com");
+        assert_eq!(billing_info.tax_id(), Some(&"TAX-12345".to_string()));
     }
 
     #[test]

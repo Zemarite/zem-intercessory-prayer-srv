@@ -14,7 +14,7 @@ CHECK (
 -- Core Entities with JSONB Value Objects
 -- =============================================
 
-CREATE TABLE organizations (
+CREATE TABLE organization (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name            VARCHAR(64) NOT NULL,
 
@@ -34,19 +34,21 @@ CREATE TABLE organizations (
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE churches (
+CREATE TABLE church (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name            VARCHAR(64) NOT NULL,
     address         JSONB NOT NULL 
                     CHECK (jsonb_typeof(address) = 'object'),
-    organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+    contact_info    JSONB NOT NULL 
+                    CHECK (jsonb_typeof(contact_info) = 'object'),
+    organization_id UUID NOT NULL REFERENCES organization(id) ON DELETE CASCADE,
     pastor_user_id  UUID, -- FK added later
 
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE users (
+CREATE TABLE member (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name            VARCHAR(64) NOT NULL,
 
@@ -58,7 +60,7 @@ CREATE TABLE users (
     address         JSONB NOT NULL 
                     CHECK (jsonb_typeof(address) = 'object'),
 
-    church_id       UUID NOT NULL REFERENCES churches(id) ON DELETE RESTRICT,
+    church_id       UUID NOT NULL REFERENCES church(id) ON DELETE RESTRICT,
     role            VARCHAR(32) NOT NULL DEFAULT 'MEMBER' 
                    CHECK (role IN ('MEMBER', 'INTERCESSOR', 'ADMIN', 'PASTOR')),
 
@@ -68,7 +70,7 @@ CREATE TABLE users (
 );
 
 -- Add FK after users table exists
-ALTER TABLE churches 
+ALTER TABLE church 
     ADD CONSTRAINT fk_churches_pastor 
     FOREIGN KEY (pastor_user_id) REFERENCES users(id) ON DELETE SET NULL;
 
@@ -76,23 +78,23 @@ ALTER TABLE churches
 -- Groups & Prayer Tables (unchanged except for clarity)
 -- =============================================
 
-CREATE TABLE groups (
+CREATE TABLE group (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name            VARCHAR(64) NOT NULL,
     description     VARCHAR(256),
-    type            VARCHAR(32) NOT NULL CHECK (type IN ('BIBLE_STUDY', 'PRAYER_CHAIN', 'YOUTH_GROUP', 
+    type            VARCHAR(32) NOT NULL CHECK (type IN ('BIBLE_STUDY', 'YOUTH_GROUP', 
                                                   'MENS_MINISTRY', 'WOMENS_MINISTRY', 
                                                   'SHORT_TERM_EVENT', 'OTHER')),
     is_temporary    BOOLEAN NOT NULL DEFAULT false,
     start_date      DATE,
     end_date        DATE,
-    church_id       UUID NOT NULL REFERENCES churches(id) ON DELETE CASCADE,
-    leader_user_id  UUID REFERENCES users(id) ON DELETE SET NULL,
+    church_id       UUID NOT NULL REFERENCES church(id) ON DELETE CASCADE,
+    leader_user_id  UUID REFERENCES member(id) ON DELETE SET NULL,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE prayer_requests (
+CREATE TABLE prayer_request (
     id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title               VARCHAR(64) NOT NULL,
     description         VARCHAR(256) NOT NULL,
@@ -101,29 +103,29 @@ CREATE TABLE prayer_requests (
                         CHECK (status IN ('OPEN', 'ANSWERED', 'CLOSED')),
     scope               VARCHAR(32) NOT NULL 
                         CHECK (scope IN ('CHURCH_ONLY', 'ORGANIZATION_WIDE', 'GROUP_ONLY', 'PUBLIC')),
-    group_id            UUID REFERENCES groups(id) ON DELETE CASCADE,
-    church_id           UUID NOT NULL REFERENCES churches(id) ON DELETE CASCADE,
-    organization_id     UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    submitter_user_id   UUID REFERENCES users(id) ON DELETE SET NULL,
+    group_id            UUID REFERENCES group(id) ON DELETE CASCADE,
+    church_id           UUID NOT NULL REFERENCES church(id) ON DELETE CASCADE,
+    organization_id     UUID NOT NULL REFERENCES organization(id) ON DELETE CASCADE,
+    submitter_user_id   UUID REFERENCES member(id) ON DELETE SET NULL,
     created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE intercessions (
+CREATE TABLE intercession (
     id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    prayer_request_id   UUID NOT NULL REFERENCES prayer_requests(id) ON DELETE CASCADE,
-    intercessor_user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    prayer_request_id   UUID NOT NULL REFERENCES prayer_request(id) ON DELETE CASCADE,
+    intercessor_user_id UUID NOT NULL REFERENCES member(id) ON DELETE CASCADE,
     notes               VARCHAR(512),
     prayed_at           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE(prayer_request_id, intercessor_user_id)
 );
 
-CREATE TABLE notifications (
+CREATE TABLE notification (
     id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     type                VARCHAR(32) NOT NULL CHECK (type IN ('NEW_REQUEST', 'UPDATE', 'ANSWERED', 'INTERCESSION')),
     message             VARCHAR(256) NOT NULL,
-    recipient_user_id   UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    prayer_request_id   UUID REFERENCES prayer_requests(id) ON DELETE CASCADE,
+    recipient_user_id   UUID NOT NULL REFERENCES member(id) ON DELETE CASCADE,
+    prayer_request_id   UUID REFERENCES prayer_request(id) ON DELETE CASCADE,
     sent_at             TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -131,21 +133,21 @@ CREATE TABLE notifications (
 -- Indexes (important for JSONB performance)
 -- =============================================
 
-CREATE INDEX idx_organizations_name ON organizations(name);
-CREATE INDEX idx_users_church_id ON users(church_id);
-CREATE INDEX idx_prayer_requests_church_id ON prayer_requests(church_id);
-CREATE INDEX idx_prayer_requests_status ON prayer_requests(status);
+CREATE INDEX idx_organization_name ON organization(name);
+CREATE INDEX idx_member_church_id ON member(church_id);
+CREATE INDEX idx_prayer_request_church_id ON prayer_request(church_id);
+CREATE INDEX idx_prayer_request_status ON prayer_request(status);
 
 -- GIN indexes for fast JSONB queries (e.g. contact_info ->> 'primary_email')
-CREATE INDEX idx_organizations_contact_info_gin ON organizations USING GIN (contact_info);
-CREATE INDEX idx_organizations_address_gin ON organizations USING GIN (address);
-CREATE INDEX idx_organizations_billing_info_gin ON organizations USING GIN (billing_info);
+CREATE INDEX idx_organization_contact_info_gin ON organization USING GIN (contact_info);
+CREATE INDEX idx_organization_address_gin ON organization USING GIN (address);
+CREATE INDEX idx_organization_billing_info_gin ON organization USING GIN (billing_info);
 
-CREATE INDEX idx_users_contact_info_gin ON users USING GIN (contact_info);
-CREATE INDEX idx_users_address_gin ON users USING GIN (address);
+CREATE INDEX idx_member_contact_info_gin ON member USING GIN (contact_info);
+CREATE INDEX idx_member_address_gin ON member USING GIN (address);
 
--- Partial index example: find users by primary email inside JSONB
-CREATE INDEX idx_users_primary_email ON users 
+-- Partial index example: find members by primary email inside JSONB
+CREATE INDEX idx_member_primary_email ON member 
     ((contact_info ->> 'primary_email')) 
     WHERE (contact_info ->> 'primary_email') IS NOT NULL;
 
@@ -161,22 +163,22 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_organizations_updated_at 
-    BEFORE UPDATE ON organizations FOR EACH ROW 
+CREATE TRIGGER trg_organization_updated_at 
+    BEFORE UPDATE ON organization FOR EACH ROW 
     EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER trg_churches_updated_at 
-    BEFORE UPDATE ON churches FOR EACH ROW 
+CREATE TRIGGER trg_church_updated_at 
+    BEFORE UPDATE ON church FOR EACH ROW 
     EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER trg_users_updated_at 
-    BEFORE UPDATE ON users FOR EACH ROW 
+CREATE TRIGGER trg_member_updated_at 
+    BEFORE UPDATE ON member FOR EACH ROW 
     EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER trg_groups_updated_at 
-    BEFORE UPDATE ON groups FOR EACH ROW 
+CREATE TRIGGER trg_group_updated_at 
+    BEFORE UPDATE ON group FOR EACH ROW 
     EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER trg_prayer_requests_updated_at 
-    BEFORE UPDATE ON prayer_requests FOR EACH ROW 
+CREATE TRIGGER trg_prayer_request_updated_at 
+    BEFORE UPDATE ON prayer_request FOR EACH ROW 
     EXECUTE FUNCTION update_updated_at_column();
