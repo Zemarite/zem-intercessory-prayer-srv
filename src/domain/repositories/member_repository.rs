@@ -18,5 +18,5 @@ pub trait MemberRepository {
     async fn find_by_id(&self, id: &MemberId) -> Result<Option<Member>, DomainError>;
 
     /// Finds all members belonging to a specific church.
-    async fn find_by_church_id(&self, church_id: &ChurchId) -> Result<Vec<Member>, DomainError>;
+    async fn list_by_church_id(&self, church_id: &ChurchId) -> Result<Vec<Member>, DomainError>;
 }

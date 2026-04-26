@@ -18,7 +18,7 @@ pub trait ChurchRepository {
     async fn find_by_id(&self, id: &ChurchId) -> Result<Option<Church>, DomainError>;
 
     /// Finds all churches belonging to a specific organization.
-    async fn find_by_organization_id(
+    async fn list_by_organization_id(
         &self,
         organization_id: &OrganizationId,
     ) -> Result<Vec<Church>, DomainError>;

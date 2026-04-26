@@ -77,6 +77,8 @@ Use this checklist to guide domain implementation. Complete each step systematic
 - [ ] Enumeration types defined in `enums/`
 - [ ] Variant names follow domain terminology
 - [ ] Methods added for enum-specific logic
+- [ ] impl `as_str()` human-readable string representation
+- [ ] impl `from_str()` create a ContactMethod from a string
 - [ ] `Display` and `FromStr` implemented where useful
 
 ### 5. Domain Events
@@ -96,22 +98,6 @@ Use this checklist to guide domain implementation. Complete each step systematic
 - [ ] Generic constraints added for type safety
 - [ ] Associated types used for complex return values
 
-#### Repository Trait Template
-
-```rust
-use async_trait::async_trait;
-use crate::domain::{entities::User, value_objects::UserId};
-
-#[async_trait]
-pub trait UserRepository {
-    async fn create(&self, user: User) -> Result<(), RepositoryError>;
-    async fn update(&self, user: &User) -> Result<(), RepositoryError>;
-    async fn find_by_id(&self, id: &UserId) -> Result<Option<User>, RepositoryError>;
-    async fn find_by_email(&self, email: &Email) -> Result<Option<User>, RepositoryError>;
-    async fn delete(&self, id: &UserId) -> Result<(), RepositoryError>;
-}
-```
-
 ### 7. Error Handling
 
 - [ ] Domain error enum created in `errors.rs`
@@ -122,38 +108,6 @@ pub trait UserRepository {
 - **Consistency:** Using an enum allows for a structured approach that can be applied consistently across the project as it matures.
 - **Programmatic Utility:** By avoiding reliance on display text for error meaning, the code remains more useful for the machine; for instance, the error can be serialized to JSON for logging or client-side rendering in web or device applications.
 
-```rust
-use derive_more::{Display, From};
-
-pub type result<T> = core::result::Result<T, DomainError>;
-
-#[derive(Debug, Display, From)]
-#[display("{self:?}")]
-pub enum DomainError {
-    InvalidEmail(String),
-
-    #[from(String, &String, &str)]
-    Custom(String),
-
-    // -- Externals
-    #[from]
-    Io(std::io::Error), // as example
-
-}
-
-impl DomainError {
-    pub fn custom(err: impl std::error::Error) -> Self {
-        Self::Custom(err.to_string())
-    }
-
-    pub fn custom(val: impl Into<String>) -> Self {
-        Self::Custom(val.into())
-    }
-}
-
-impl std::error::Error for DomainError {}
-```
-
 ### 8. Module Organization
 
 - [ ] All modules declared in `mod.rs`
@@ -163,7 +117,9 @@ impl std::error::Error for DomainError {}
 
 ### 9. Testing & Validation
 
-- [ ] Unit tests written for all domain logic
+- [ ] Unit tests written for all domain logic in entities, value objects, events and enums
+- [ ] Edge cases and invariants tested
+- [ ] Test coverage reviewed for critical paths
 - [ ] Property-based testing considered for complex logic
 - [ ] Domain rules verified through tests
 - [ ] Code review completed for architectural compliance
@@ -182,6 +138,7 @@ pub trait UserRepository {
     async fn update(&self, user: &User) -> Result<(), RepositoryError>;
     async fn find_by_id(&self, id: &UserId) -> Result<Option<User>, RepositoryError>;
     async fn find_by_email(&self, email: &Email) -> Result<Option<User>, RepositoryError>;
+    async fn list_all(&self) -> Result<Vec<User>, RepositoryError>;
     async fn delete(&self, id: &UserId) -> Result<(), RepositoryError>;
 }
 ```
@@ -246,4 +203,13 @@ The domain layer **should** contain:
 - domain terminology
 - contracts that express what the business needs
 
-This separation keeps the architecture clean, testable, and aligned with DDD and CQRS principles.
+## Best Practices
+
+- Keep domain layer free of external dependencies
+- Use newtypes for primitive type safety
+- Prefer associated functions over constructors for complex creation
+- Implement `Display` for user-friendly representations
+- Use `PhantomData` for marker traits if needed
+- Separate create and update operations in repositories to clarify intent and enable different validation/authorization logic
+- Document business rules in code comments
+- Test domain logic thoroughly with edge cases

@@ -52,7 +52,6 @@ CREATE TABLE member (
     address         JSONB NOT NULL 
                     CHECK (jsonb_typeof(address) = 'object'),
 
-  
     role            VARCHAR(32) NOT NULL DEFAULT 'MEMBER' 
                    CHECK (role IN ('MEMBER', 'INTERCESSOR', 'ADMIN', 'PASTOR')),
 
@@ -67,10 +66,10 @@ ALTER TABLE church
     FOREIGN KEY (pastor_user_id) REFERENCES users(id) ON DELETE SET NULL;
 
 -- =============================================
--- Groups & Prayer Tables (unchanged except for clarity)
+-- Program & Prayer Tables (unchanged except for clarity)
 -- =============================================
 
-CREATE TABLE group (
+CREATE TABLE program (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name            VARCHAR(64) NOT NULL,
     description     VARCHAR(256),
@@ -102,13 +101,13 @@ CREATE TABLE prayer_request (
     updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE prayer_request_groups (
+CREATE TABLE prayer_request_program (
     id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     prayer_request_id   UUID NOT NULL REFERENCES prayer_request(id) ON DELETE CASCADE,
-    group_id            UUID NOT NULL REFERENCES group(id) ON DELETE CASCADE,
+    program_id          UUID NOT NULL REFERENCES program(id) ON DELETE CASCADE,
     created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    UNIQUE(prayer_request_id, group_id)
+    UNIQUE(prayer_request_id, program_id)
 );
 
 CREATE TABLE intercession (
@@ -138,9 +137,9 @@ CREATE INDEX idx_member_church_id ON member(church_id);
 CREATE INDEX idx_prayer_request_church_id ON prayer_request(church_id);
 CREATE INDEX idx_prayer_request_status ON prayer_request(status);
 
-CREATE INDEX idx_prayer_request_groups_prayer_request_id ON prayer_request_groups(prayer_request_id);
+CREATE INDEX idx_prayer_request_program_prayer_request_id ON prayer_request_program(prayer_request_id);
 
-CREATE INDEX idx_prayer_request_groups_group_id ON prayer_request_groups(group_id);
+CREATE INDEX idx_prayer_request_program_program_id ON prayer_request_program(program_id);
 
 -- GIN indexes for fast JSONB queries (e.g. contact_info ->> 'primary_email')
 CREATE INDEX idx_organization_contact_info_gin ON organization USING GIN (contact_info);
@@ -179,14 +178,14 @@ CREATE TRIGGER trg_member_updated_at
     BEFORE UPDATE ON member FOR EACH ROW 
     EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER trg_group_updated_at 
-    BEFORE UPDATE ON group FOR EACH ROW 
+CREATE TRIGGER trg_program_updated_at 
+    BEFORE UPDATE ON program FOR EACH ROW 
     EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER trg_prayer_request_updated_at 
     BEFORE UPDATE ON prayer_request FOR EACH ROW 
     EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER trg_prayer_request_groups_updated_at 
-    BEFORE UPDATE ON prayer_request_groups FOR EACH ROW 
+CREATE TRIGGER trg_prayer_request_program_updated_at 
+    BEFORE UPDATE ON prayer_request_program FOR EACH ROW 
     EXECUTE FUNCTION update_updated_at_column();
