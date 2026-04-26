@@ -16,10 +16,7 @@ pub struct PrayerRequestProgram {
 
 impl PrayerRequestProgram {
     /// Creates a new PrayerRequestProgram entity with a generated ID and current timestamps.
-    pub fn new(
-        prayer_request_id: PrayerRequestId,
-        program_id: ProgramId,
-    ) -> Self {
+    pub fn new(prayer_request_id: PrayerRequestId, program_id: ProgramId) -> Self {
         let now = OffsetDateTime::now_utc();
 
         Self {

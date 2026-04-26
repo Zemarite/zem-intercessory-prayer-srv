@@ -15,13 +15,22 @@ pub trait PrayerRequestProgramRepository {
     async fn update(&self, assignment: &PrayerRequestProgram) -> Result<(), DomainError>;
 
     /// Finds a prayer request program assignment by its ID.
-    async fn find_by_id(&self, id: &PrayerRequestProgramId) -> Result<Option<PrayerRequestProgram>, DomainError>;
+    async fn find_by_id(
+        &self,
+        id: &PrayerRequestProgramId,
+    ) -> Result<Option<PrayerRequestProgram>, DomainError>;
 
     /// Finds all program assignments for a specific prayer request.
-    async fn find_by_prayer_request(&self, prayer_request_id: &PrayerRequestId) -> Result<Vec<PrayerRequestProgram>, DomainError>;
+    async fn find_by_prayer_request(
+        &self,
+        prayer_request_id: &PrayerRequestId,
+    ) -> Result<Vec<PrayerRequestProgram>, DomainError>;
 
     /// Finds all prayer request assignments for a specific program.
-    async fn find_by_program(&self, program_id: &ProgramId) -> Result<Vec<PrayerRequestProgram>, DomainError>;
+    async fn find_by_program(
+        &self,
+        program_id: &ProgramId,
+    ) -> Result<Vec<PrayerRequestProgram>, DomainError>;
 
     /// Deletes a prayer request program assignment by its ID.
     async fn delete(&self, id: &PrayerRequestProgramId) -> Result<(), DomainError>;
