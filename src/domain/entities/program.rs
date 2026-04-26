@@ -141,7 +141,10 @@ impl Program {
     }
 
     /// Updates the program's description and sets the updated_at timestamp.
-    pub fn update_description(&mut self, new_description: Option<String>) -> Result<(), DomainError> {
+    pub fn update_description(
+        &mut self,
+        new_description: Option<String>,
+    ) -> Result<(), DomainError> {
         if let Some(desc) = &new_description {
             if desc.len() > 256 {
                 return Err(DomainError::ValidationError(
@@ -168,7 +171,11 @@ impl Program {
     }
 
     /// Updates the program's dates and sets the updated_at timestamp.
-    pub fn update_dates(&mut self, new_start_date: Option<Date>, new_end_date: Option<Date>) -> Result<(), DomainError> {
+    pub fn update_dates(
+        &mut self,
+        new_start_date: Option<Date>,
+        new_end_date: Option<Date>,
+    ) -> Result<(), DomainError> {
         if let (Some(start), Some(end)) = (new_start_date, new_end_date) {
             if start > end {
                 return Err(DomainError::ValidationError(
@@ -224,7 +231,10 @@ mod tests {
 
         assert_eq!(program.church_id(), &church_id);
         assert_eq!(program.name(), "Bible Study Group");
-        assert_eq!(program.description().as_ref().unwrap(), "Weekly Bible study");
+        assert_eq!(
+            program.description().as_ref().unwrap(),
+            "Weekly Bible study"
+        );
         assert_eq!(program.program_type(), &ProgramType::BibleStudy);
         assert!(!program.is_temporary());
         assert_eq!(program.start_date(), &start_date);
@@ -298,7 +308,9 @@ mod tests {
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err(),
-            DomainError::ValidationError("Program description cannot exceed 256 characters".to_string())
+            DomainError::ValidationError(
+                "Program description cannot exceed 256 characters".to_string()
+            )
         );
     }
 

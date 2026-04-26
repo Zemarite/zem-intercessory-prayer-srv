@@ -65,11 +65,26 @@ mod tests {
 
     #[test]
     fn test_program_type_from_str() {
-        assert_eq!(ProgramType::from_str("bible_study"), Some(ProgramType::BibleStudy));
-        assert_eq!(ProgramType::from_str("YOUTH_GROUP"), Some(ProgramType::YouthGroup));
-        assert_eq!(ProgramType::from_str("mens_ministry"), Some(ProgramType::MensMinistry));
-        assert_eq!(ProgramType::from_str("WOMENS_MINISTRY"), Some(ProgramType::WomensMinistry));
-        assert_eq!(ProgramType::from_str("short_term_event"), Some(ProgramType::ShortTermEvent));
+        assert_eq!(
+            ProgramType::from_str("bible_study"),
+            Some(ProgramType::BibleStudy)
+        );
+        assert_eq!(
+            ProgramType::from_str("YOUTH_GROUP"),
+            Some(ProgramType::YouthGroup)
+        );
+        assert_eq!(
+            ProgramType::from_str("mens_ministry"),
+            Some(ProgramType::MensMinistry)
+        );
+        assert_eq!(
+            ProgramType::from_str("WOMENS_MINISTRY"),
+            Some(ProgramType::WomensMinistry)
+        );
+        assert_eq!(
+            ProgramType::from_str("short_term_event"),
+            Some(ProgramType::ShortTermEvent)
+        );
         assert_eq!(ProgramType::from_str("OTHER"), Some(ProgramType::Other));
         assert_eq!(ProgramType::from_str("invalid"), None);
     }

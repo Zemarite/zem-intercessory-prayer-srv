@@ -28,5 +28,8 @@ pub trait ProgramRepository {
     ) -> Result<Vec<Program>, DomainError>;
 
     /// Finds programs that are currently active (no end date or end date in future).
-    async fn list_active_by_church_id(&self, church_id: &ChurchId) -> Result<Vec<Program>, DomainError>;
+    async fn list_active_by_church_id(
+        &self,
+        church_id: &ChurchId,
+    ) -> Result<Vec<Program>, DomainError>;
 }
