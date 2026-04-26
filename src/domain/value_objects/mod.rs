@@ -6,6 +6,7 @@ mod email;
 mod member_id;
 mod organization_id;
 mod prayer_request_id;
+mod prayer_request_program_id;
 mod program_id;
 
 pub use address::*;
@@ -16,4 +17,5 @@ pub use email::*;
 pub use member_id::*;
 pub use organization_id::*;
 pub use prayer_request_id::*;
+pub use prayer_request_program_id::*;
 pub use program_id::*;
