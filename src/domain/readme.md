@@ -2,22 +2,6 @@
 
 The Domain Layer contains the core business model and rules of the system. It follows Domain-Driven Design (DDD) principles by representing the ubiquitous language directly in code through entities, value objects, enums, domain events, and repository contracts. This layer should remain pure and framework-agnostic: it must not depend on presentation, application, or infrastructure concerns. In a CQRS-based architecture, the domain does not know about commands or queries directly—it only exposes business behavior and enforces invariants that the application layer orchestrates.
 
-## Root Domain Module (`src/domain/mod.rs`)
-This file declares the submodules of the domain layer. Keep it minimal—only include `pub mod` declarations and any carefully chosen re-exports if needed.
-
-Example content for `src/domain/mod.rs`:
-
-```rust
-pub mod entities;
-pub mod value_objects;
-pub mod enums;
-pub mod events;
-pub mod repositories;
-pub mod errors;
-```
-
-- **Why?** This provides a clean entry point into the domain layer and keeps the module structure explicit.
-- **Best Practice:** Avoid putting business logic in `mod.rs`; it should only organize modules.
 
 ### Entities Submodule (`src/domain/entities/`)
 This folder contains aggregate roots and entities that model the business domain.
