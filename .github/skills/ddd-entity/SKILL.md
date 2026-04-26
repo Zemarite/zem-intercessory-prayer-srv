@@ -56,6 +56,8 @@ Use this checklist to guide domain implementation. Complete each step systematic
 - [ ] `PartialEq`, `Eq`, `Hash` derived where appropriate
 - [ ] Domain methods added for business operations
 - [ ] Unit tests written for validation and methods
+    - **ID types** (e.g., `ProgramId`): test `generate()` produces a valid UUID, `parse()` accepts valid UUIDs and rejects invalid strings, `value()` round-trips correctly, and `Display` formats as expected
+    - **Other value objects**: test all constructor validation rules, edge cases (empty strings, max length boundaries), and any domain-specific methods
 
 ### 3. Entities
 
