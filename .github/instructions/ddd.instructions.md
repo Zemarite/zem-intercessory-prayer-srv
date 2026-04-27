@@ -19,12 +19,12 @@ This instruction set guides AI agents, such as GitHub Copilot, in generating con
 - **Ownership and Borrowing**: Favor ownership over borrowing where possible. Use `Arc` for shared state in multi-threaded contexts.
 - **Testing**: Write unit tests with `#[cfg(test)]` modules. Use `mockall` for mocking traits.
 - **Dependencies**: Prefer crates like `serde` for serialization, `uuid` for IDs, `chrono` for dates.
-- **Code Organization**: Structure as `src/domain/`, `src/application/`, `src/infrastructure/`, `src/api/`. Use `lib.rs` for module declarations.
+- **Code Organization**: Structure as `src/domain/`, `src/application/`, `src/infrastructure/`, `src/interface/`. Use `lib.rs` for module declarations.
 - **Naming**: Use snake_case for functions/variables, PascalCase for types. Prefix traits with `Trait` if needed for clarity.
 - **Documentation**: Add `///` doc comments for public APIs. Use `#[derive(Debug)]` for debuggability.
 
 ### Architectural Consistency
-- **Layer Separation**: Domain (core logic), Application (use cases), Infrastructure (external concerns), API (entry points).
+- **Layer Separation**: Domain (core logic), Application (use cases), Infrastructure (external concerns), Interface (entry points).
 - **Dependency Injection**: Use traits for interfaces, inject implementations (e.g., via constructors).
 - **Immutability**: Prefer immutable data structures. Use `Rc` or `Arc` for shared references.
 - **Performance**: Avoid unnecessary allocations. Use `Cow` for conditional ownership.

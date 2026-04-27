@@ -5,6 +5,12 @@ description: "**WORKFLOW SKILL** — Generate complete Domain-Driven Design enti
 
 # Rust DDD Entity Pure Implementation
 
+## Quick Start
+
+- **When to Invoke**: Use this skill when tasked with creating or updating DDD entities, value objects, events, or repositories in the `domain/` layer. Avoid for infrastructure (e.g., persistence) or application logic.
+- **Prerequisites**: Ensure the `domain/` folder structure exists (see Project Structure). Have business requirements ready for domain analysis.
+- **Output**: Generates pure Rust files in `domain/`, updates `mod.rs`, and includes unit tests.
+
 This skill provides a comprehensive workflow for implementing Domain-Driven Design (DDD) entities and related domain objects in pure Rust without any external frameworks. It focuses on creating pure, immutable domain models that encapsulate business logic.
 
 ## Principles
@@ -29,102 +35,100 @@ domain/
 
 ## Workflow
 
-1. **Define Domain Concepts**: Identify entities, value objects, and events from business requirements
-2. **Create Value Objects**: Implement immutable types with validation
-3. **Implement Entities**: Define aggregate roots with business methods
-4. **Define Enums**: Add domain-specific enumerations
-5. **Add Domain Events**: Create events for state changes
-6. **Create Repository Interfaces**: Define traits for data access
-7. **Implement Error Types**: Add domain-specific error handling
-8. **Update Module Structure**: Ensure proper module exports
-9. **Write Unit Tests**: Focus on domain logic and invariants
+Follow these steps to generate DDD entities. Use the Interactive Checklist for detailed tasks.
+
+1. **Analyze Requirements**: Gather business rules, entities, and invariants from user input or docs. Identify aggregates and value objects.
+2. **Generate Value Objects**: Create immutable types with validation (see Checklist Step 2).
+3. **Generate Entities**: Implement aggregate roots with methods (see Checklist Step 3).
+4. **Add Enums and Events**: Define domain enums and events (see Checklist Steps 4-5).
+5. **Define Repositories**: Create trait interfaces (see Checklist Step 6).
+6. **Handle Errors**: Implement domain errors (see Checklist Step 7).
+7. **Organize Modules**: Update `mod.rs` and exports (see Checklist Step 8).
+8. **Test and Validate**: Write unit tests and run `cargo test` (see Checklist Step 9).
 
 ## Interactive Checklist
 
 Use this checklist to guide domain implementation. Complete each step systematically.
 
+## Key Concepts
+
+### Entities
+
+Entities have identity and lifecycle. Aggregate roots should protect invariants and control access to internal state. Business rules should live here when they naturally belong to the entity.
+
 ### 1. Domain Analysis
 
-- [ ] Business requirements documented
-- [ ] Bounded context boundaries defined
-- [ ] Key domain concepts identified (entities, values, events)
+- [ ] Document business requirements
+- [ ] Define bounded context boundaries
+- [ ] Identify key domain concepts (entities, values, events)
 
 ### 2. Value Objects
 
-- [ ] Value object structs created in `value_objects/`
-- [ ] Validation logic implemented in `new()` constructors
-- [ ] `PartialEq`, `Eq`, `Hash` derived where appropriate
-- [ ] Domain methods added for business operations
-- [ ] Unit tests written for validation and methods
+- [ ] Create value object structs in `value_objects/`
+- [ ] Implement validation logic in `new()` constructors
+- [ ] Derive `PartialEq`, `Eq`, `Hash` where appropriate
+- [ ] Add domain methods for business operations
+- [ ] Write unit tests for validation and methods
     - **ID types** (e.g., `ProgramId`): test `generate()` produces a valid UUID, `parse()` accepts valid UUIDs and rejects invalid strings, `value()` round-trips correctly, and `Display` formats as expected
     - **Other value objects**: test all constructor validation rules, edge cases (empty strings, max length boundaries), and any domain-specific methods
 
 ### 3. Entities
 
-- [ ] Entity structs defined in `entities/` with ID fields
-- Entities have identity and lifecycle.
-- Aggregate roots should protect invariants and control access to internal state.
-- Business rules should live here when they naturally belong to the entity.
-- [ ] Entities Structure:
-    - [ ] Structs: deriving `Debug`, `Clone`, `PartialEq`, and `Eq` where appropriate. Implement domain behavior as methods on the entity, ensuring that invariants are maintained.
-    - [ ] Impl: blocks contain the methods implementing business rules and behavior.
-        - [ ] Factory: methods for creation (e.g., `new()`) that enforce valid state.
-        - [ ] Business behavior / methods: that enforce invariants and guard state transitions (e.g., `rename()`, `update_status()`, `change_email()`).
-        - [ ] Validation: logic to ensure entities cannot enter invalid states. This can be done through constructors or methods that return `Result<(), DomainError>`.
-        - [ ] Getters: Provide read-only access to fields. Returning references avoids cloning (e.g., &str for String).
-    - [ ] Impl `PartialEq` and `Eq`: based on identity fields (e.g., `id`) rather than all fields, to reflect the concept of entity identity in DDD.
+- [ ] Define entity structs in `entities/` with ID fields (e.g., `pub struct EntityName { id: EntityId, ... }`).
+- [ ] Derive `Debug`, `Clone`, `PartialEq`, and `Eq` where appropriate.
+- [ ] Implement factory methods (e.g., `new()`) that enforce valid initial state.
+- [ ] Add business methods (e.g., `rename()`, `update_status()`) that maintain invariants and return `Result<(), DomainError>`.
+- [ ] Implement getters for read-only field access (e.g., return `&str` for strings).
+- [ ] Implement `PartialEq` and `Eq` based on identity (e.g., `id` field) only.
+- [ ] Write unit tests for creation, methods, and invariants.
 
 ### 4. Domain Enums
 
-- [ ] Enumeration types defined in `enums/`
-- [ ] Variant names follow domain terminology
-- [ ] Methods added for enum-specific logic
-- [ ] impl `as_str()` human-readable string representation
-- [ ] impl `from_str()` create a ContactMethod from a string
-- [ ] `Display` and `FromStr` implemented where useful
+- [ ] Define enumeration types in `enums/`
+- [ ] Use variant names that follow domain terminology
+- [ ] Add methods for enum-specific logic
+- [ ] Implement `as_str()` for human-readable string representation
+- [ ] Implement `from_str()` to create the enum from a string
+- [ ] Implement `Display` and `FromStr` where useful
 
 ### 5. Domain Events
 
-- [ ] Event structs created in `events/` with timestamp
-- [ ] Event data includes relevant entity state
-- [ ] Serialization traits implemented if needed
-- [ ] Event naming follows past tense convention
-- [ ] Unit tests for event creation
+- [ ] Create event structs in `events/` with timestamp
+- [ ] Include event data with relevant entity state
+- [ ] Implement serialization traits if needed
+- [ ] Follow past tense convention for event naming
+- [ ] Write unit tests for event creation
 
 ### 6. Repository Interfaces
 
-- [ ] Repository traits defined in `repositories/`
-- [ ] Create and update operations separated in method signatures
-- [ ] Method signatures follow CQRS principles (commands/queries)
-- [ ] Error types specified for each operation
-- [ ] Generic constraints added for type safety
-- [ ] Associated types used for complex return values
+- [ ] Define repository traits in `repositories/`
+- [ ] Separate create and update operations in method signatures
+- [ ] Ensure method signatures follow CQRS principles (commands/queries)
+- [ ] Specify error types for each operation
+- [ ] Add generic constraints for type safety
+- [ ] Use associated types for complex return values
 
 ### 7. Error Handling
 
-- [ ] Domain error enum created in `errors.rs`
-- [ ] Error variants cover all domain failure modes
-- [ ] Error conversion implementations added
-
-- **Clarity and Precision:** Using enum variants with descriptive names (and favoring struct variants over tuple variants) ensures that the code remains clear, rather than relying on ambiguous text or tuple structures that hide the meaning of the data.
-- **Consistency:** Using an enum allows for a structured approach that can be applied consistently across the project as it matures.
-- **Programmatic Utility:** By avoiding reliance on display text for error meaning, the code remains more useful for the machine; for instance, the error can be serialized to JSON for logging or client-side rendering in web or device applications.
+- [ ] Create domain error enum in `errors.rs`
+- [ ] Cover all domain failure modes with error variants
+- [ ] Add error conversion implementations
 
 ### 8. Module Organization
 
-- [ ] All modules declared in `mod.rs`
-- [ ] Public API clearly defined
-- [ ] Re-exports added for convenience
-- [ ] Documentation comments added to public items
+- [ ] Declare all modules in `mod.rs`
+- [ ] Define public API clearly
+- [ ] Add re-exports for convenience
+- [ ] Add documentation comments to public items
 
 ### 9. Testing & Validation
 
-- [ ] Unit tests written for all domain logic in entities, value objects, events and enums
-- [ ] Edge cases and invariants tested
-- [ ] Test coverage reviewed for critical paths
-- [ ] Property-based testing considered for complex logic
-- [ ] Domain rules verified through tests
-- [ ] Code review completed for architectural compliance
+- [ ] Write unit tests for all domain logic in entities, value objects, events and enums
+- [ ] Test edge cases and invariants
+- [ ] Review test coverage for critical paths
+- [ ] Consider property-based testing for complex logic
+- [ ] Verify domain rules through tests
+- [ ] Complete code review for architectural compliance
 
 ## Code Templates
 
@@ -150,7 +154,7 @@ pub trait UserRepository {
 ```rust
 use derive_more::{Display, From};
 
-pub type result<T> = core::result::Result<T, DomainError>;
+pub type Result<T> = core::result::Result<T, DomainError>;
 
 #[derive(Debug, Display, From)]
 #[display("{self:?}")]
@@ -179,32 +183,6 @@ impl DomainError {
 impl std::error::Error for DomainError {}
 ```
 
-### Overall Guidance
-
-- **Purity:** The domain layer should not depend on web frameworks, database libraries, or transport models.
-- **CQRS Alignment:** Commands and queries live outside the domain, but both rely on the same domain rules and models.
-- **Testing:** Prefer unit tests for entities and value objects since domain logic should be deterministic and easy to test.
-- **Evolution:** Start simple, then introduce additional domain concepts such as domain services or policies only when the model needs them.
-- **Performance:** Keep the domain focused on correctness and clarity first; optimization belongs elsewhere unless a business rule truly requires it.
-
-### Important Boundaries
-
-The domain layer should **not** contain:
-
-- HTTP request/response models
-- application handlers
-- database-specific code
-- framework middleware
-- serialization concerns unless truly required by the domain
-
-The domain layer **should** contain:
-
-- business rules
-- invariants
-- rich models
-- domain terminology
-- contracts that express what the business needs
-
 ## Best Practices
 
 - Keep domain layer free of external dependencies
@@ -215,3 +193,26 @@ The domain layer **should** contain:
 - Separate create and update operations in repositories to clarify intent and enable different validation/authorization logic
 - Document business rules in code comments
 - Test domain logic thoroughly with edge cases
+- Ensure the domain layer does not depend on web frameworks, database libraries, or transport models (purity)
+- Commands and queries live outside the domain, but both rely on the same domain rules and models (CQRS alignment)
+- Prefer unit tests for entities and value objects since domain logic should be deterministic and easy to test
+- Start simple, then introduce additional domain concepts such as domain services or policies only when the model needs them (evolution)
+- Keep the domain focused on correctness and clarity first; optimization belongs elsewhere unless a business rule truly requires it (performance)
+- The domain layer should not contain HTTP request/response models, application handlers, database-specific code, framework middleware, or serialization concerns unless truly required by the domain
+- The domain layer should contain business rules, invariants, rich models, domain terminology, and contracts that express what the business needs
+
+### Testing Guidance
+
+- For enums containing non-PartialEq fields (e.g., std::io::Error), prefer `assert!(matches!(...))` over `assert_eq!` in tests unless implementing manual PartialEq.
+- Write unit tests for all constructors, methods, and invariants.
+- Use property-based testing for complex validation logic.
+
+### Integration Notes
+
+- After generation, run `cargo check` and update `src/lib.rs` or `main.rs` if needed.
+- Ensure no external imports in domain layer.
+
+## Troubleshooting
+
+- If tests fail, check invariants in entity methods.
+- For compilation errors, verify no external imports in the domain layer.
