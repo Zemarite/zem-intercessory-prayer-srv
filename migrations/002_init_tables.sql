@@ -8,7 +8,7 @@
 -- Core Entities with JSONB Value Objects
 -- =============================================
 
-CREATE TABLE organization (
+CREATE TABLE organizations (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name            VARCHAR(64) NOT NULL,
 
@@ -26,7 +26,7 @@ CREATE TABLE organization (
 
 CREATE TABLE church (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    organization_id UUID NOT NULL REFERENCES organization(id) ON DELETE CASCADE,
+    organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     pastor_user_id  UUID, -- FK added later  
 
     name            VARCHAR(64) NOT NULL,
@@ -95,7 +95,7 @@ CREATE TABLE prayer_request (
     scope               VARCHAR(32) NOT NULL 
                         CHECK (scope IN ('CHURCH_ONLY', 'ORGANIZATION_WIDE', 'GROUP_ONLY', 'PUBLIC')),
     church_id           UUID NOT NULL REFERENCES church(id) ON DELETE CASCADE,
-    organization_id     UUID NOT NULL REFERENCES organization(id) ON DELETE CASCADE,
+    organization_id     UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     submitter_member_id   UUID REFERENCES member(id) ON DELETE SET NULL,
     created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -132,7 +132,7 @@ CREATE TABLE notification (
 -- Indexes (important for JSONB performance)
 -- =============================================
 
-CREATE INDEX idx_organization_name ON organization(name);
+CREATE INDEX idx_organizations_name ON organizations(name);
 CREATE INDEX idx_member_church_id ON member(church_id);
 CREATE INDEX idx_prayer_request_church_id ON prayer_request(church_id);
 CREATE INDEX idx_prayer_request_status ON prayer_request(status);
@@ -142,9 +142,9 @@ CREATE INDEX idx_prayer_request_program_prayer_request_id ON prayer_request_prog
 CREATE INDEX idx_prayer_request_program_program_id ON prayer_request_program(program_id);
 
 -- GIN indexes for fast JSONB queries (e.g. contact_info ->> 'primary_email')
-CREATE INDEX idx_organization_contact_info_gin ON organization USING GIN (contact_info);
-CREATE INDEX idx_organization_address_gin ON organization USING GIN (address);
-CREATE INDEX idx_organization_billing_info_gin ON organization USING GIN (billing_info);
+CREATE INDEX idx_organizations_contact_info_gin ON organizations USING GIN (contact_info);
+CREATE INDEX idx_organizations_address_gin ON organizations USING GIN (address);
+CREATE INDEX idx_organizations_billing_info_gin ON organizations USING GIN (billing_info);
 
 CREATE INDEX idx_member_contact_info_gin ON member USING GIN (contact_info);
 CREATE INDEX idx_member_address_gin ON member USING GIN (address);
@@ -167,7 +167,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_organization_updated_at 
-    BEFORE UPDATE ON organization FOR EACH ROW 
+    BEFORE UPDATE ON organizations FOR EACH ROW 
     EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER trg_church_updated_at 
