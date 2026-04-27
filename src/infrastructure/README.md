@@ -31,8 +31,10 @@ src/infrastructure/
 │   └── publishers/             # Code that produces messages/events
 │
 ├── persistence/                # Everything related to data storage & retrieval
-│   ├── databases/              # Connection pools, migrations, query builders, raw drivers
-│   └── repositories/           # Concrete implementations of domain repositories
+    ├── databases/   
+    │   └── <specific_database>/            # Connection pools, migrations, query builders, raw drivers
+    └── repositories/
+        └── <specific_database>/           # Concrete implementations of domain repositories
 │
 ├── storage_systems/            # File and object storage integrations
 │   ├── blob_storage/           # S3, GCS, Azure Blob, MinIO, Backblaze…

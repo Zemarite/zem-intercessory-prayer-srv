@@ -18,7 +18,7 @@ This instruction set guides AI agents, such as GitHub Copilot, in generating con
 - **Async/Await**: Use `tokio` for asynchronous operations. Prefer async traits for repositories and services.
 - **Ownership and Borrowing**: Favor ownership over borrowing where possible. Use `Arc` for shared state in multi-threaded contexts.
 - **Testing**: Write unit tests with `#[cfg(test)]` modules. Use `mockall` for mocking traits.
-- **Dependencies**: Prefer crates like `serde` for serialization, `uuid` for IDs, `chrono` for dates.
+- **Dependencies**: Prefer crates like `serde` for serialization, `uuid` for IDs, `time` for dates.
 - **Code Organization**: Structure as `src/domain/`, `src/application/`, `src/infrastructure/`, `src/interface/`. Use `lib.rs` for module declarations.
 - **Naming**: Use snake_case for functions/variables, PascalCase for types. Prefix traits with `Trait` if needed for clarity.
 - **Documentation**: Add `///` doc comments for public APIs. Use `#[derive(Debug)]` for debuggability.
