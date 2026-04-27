@@ -1,14 +1,16 @@
 ---
 name: persistence
-description: "**WORKFLOW SKILL** — Implement the data persistence layer using Rust, SQLx, and PostgreSQL USE FOR: creating database connection pools, managing migrations, implementing repository patterns for domain entities, and ensuring robust error handling in the persistence layer."
+description: "**WORKFLOW SKILL** — Implement the data persistence layer using Rust, SQLx, and PostgreSQL. USE FOR: creating database connection pools, managing migrations, implementing repository patterns for domain entities, and ensuring robust error handling in the persistence layer. DO NOT USE FOR: domain logic, application services, or non-SQLx persistence. INVOKES: file system tools for code generation, read_file for domain traits."
 ---
 
 # Infrastructure/Persistence Implementation
 
 ## Quick Start
+
 - **When to Invoke**: Use this skill when tasked with implementing or updating the data persistence layer, including database connections, migrations, and repository implementations. Avoid for domain logic or application services.
 - **Prerequisites**: Ensure the `domain/repositories/` traits are defined. Have database schema requirements ready for migration design.
 - **Output**: Generates Rust files for database connections, migrations, and repository implementations in the `persistence/` folder structure.
+- **Validation**: After generation, run tests and check for SQLx compile errors to ensure queries are valid.
 
 ## Project Structure
 
@@ -31,6 +33,8 @@ persistence/
         └── errors.rs                       # Custom error types for persistence layer
 
 ```
+
+Adapt paths based on codebase conventions; use tools to verify existing structure.
 
 ## Key Responsibilities
 
@@ -56,6 +60,17 @@ persistence/
 - **PostgreSQL**: Primary database
 - **tokio**: Async runtime (paired with SQLx)
 - **sqlx-migrations**: Database version control
+
+### Dependencies
+
+Add the following to your `Cargo.toml`:
+
+```toml
+[dependencies]
+sqlx = { version = "0.8.6", features = ["postgres", "runtime-tokio", "macros"] }
+tokio = { version = "1.52.1", features = ["full"] }
+async-trait = "0.1"
+```
 
 ### Connection Pool Example
 
@@ -88,8 +103,28 @@ impl PostgresYourRepository {
 
 #[async_trait::async_trait]
 impl YourRepository for PostgresYourRepository {
-    // Implement trait methods using sqlx queries
+    async fn find_by_id(&self, id: i32) -> Result<Option<YourEntity>, PersistenceError> {
+        sqlx::query_as!(YourEntity, "SELECT * FROM your_table WHERE id = $1", id)
+            .fetch_optional(&self.pool)
+            .await
+            .map_err(PersistenceError::from)
+    }
+    // Implement other trait methods using sqlx queries
 }
+```
+
+### Migration Example
+
+Create a migration file in `migrations/` (e.g., `001_create_users.sql`):
+
+```sql
+-- Create users table
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 ```
 
 ## Checklist
@@ -102,9 +137,20 @@ impl YourRepository for PostgresYourRepository {
 - [ ] Write integration tests for repository operations
 - [ ] Configure database connection strings in environment
 
+## Edge Cases and Common Pitfalls
+
+- **Edge Case: Handling non-PostgreSQL databases** — Adapt SQLx to other drivers (e.g., MySQL) if needed, but default to PostgreSQL for best compile-time safety.
+- **Pitfall: Skipping compile-time checks** — Always use SQLx macros (e.g., `query_as!`) to catch query errors at compile time; avoid raw strings.
+- **Avoid: Mixing persistence logic with domain rules** — Keep repositories focused on data access; delegate business logic to domain services.
+- **Pitfall: Ignoring transaction management** — Use SQLx transactions for multi-step operations to ensure atomicity.
+
 ## Resources
 
 - [SQLx Documentation](https://github.com/launchbadge/sqlx)
 - [SQLx Query Macros](https://github.com/launchbadge/sqlx/blob/main/sqlx-macros/README.md)
 - [PostgreSQL Type Support in SQLx](https://docs.rs/sqlx/latest/sqlx/)
 - [Async Traits with async_trait](https://docs.rs/async-trait/latest/async_trait/)
+
+## Version/Updates
+
+Last reviewed April 27, 2026. Update if SQLx versions change or new best practices emerge.
