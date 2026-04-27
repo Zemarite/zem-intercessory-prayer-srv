@@ -1,31 +1,48 @@
-# Infrastructure/Persistence Skill
+---
+name: persistence
+description: "**WORKFLOW SKILL** — Implement the data persistence layer using Rust, SQLx, and PostgreSQL USE FOR: creating database connection pools, managing migrations, implementing repository patterns for domain entities, and ensuring robust error handling in the persistence layer."
+---
 
-## Overview
-Implement data persistence layer using Rust, SQLx, and PostgreSQL for the Zem Intercessory Prayer Service.
+# Infrastructure/Persistence Implementation
+
+## Quick Start
+- **When to Invoke**: Use this skill when tasked with implementing or updating the data persistence layer, including database connections, migrations, and repository implementations. Avoid for domain logic or application services.
+- **Prerequisites**: Ensure the `domain/repositories/` traits are defined. Have database schema requirements ready for migration design.
+- **Output**: Generates Rust files for database connections, migrations, and repository implementations in the `persistence/` folder structure.
 
 ## Project Structure
+
 ```
 persistence/
 ├── databases/
-│   └── postgres/
-│       ├── connection.rs          # Connection pools and initialization
-│       ├── migrations.rs          # Database migrations management
-│       └── mod.rs                 # Module exports
-└── repositories/
     └── postgres/
-        ├── mod.rs                 # Module exports
-        └── {entity}_repository.rs # Repository implementations
+        └── configurations/                 # Connection pools and initialization
+        │   ├── connection.rs               # Connection pools and initialization
+        │   ├── migrations.rs               # Database migrations management
+        │   └── mod.rs                      # Module exports
+        └── repositories/
+        │   ├── mod.rs                      # Module exports
+        │   └── {entity}_repository/        # Repository implementations
+        │       ├── dtos.rs                 # Data Transfer Objects for database models
+        │       ├── mod.rs                  # Module exports
+        │       ├── mapping.rs              # Mapping between database models and domain entities
+        │       └── {entity}_repository.rs  # Repository implementations
+        ├── mod.rs                          # Module exports
+        └── errors.rs                       # Custom error types for persistence layer
+
 ```
 
 ## Key Responsibilities
 
 ### 1. Database Layer (`databases/postgres/`)
+
 - **Connection Pooling**: Use SQLx's `PgPool` for managing PostgreSQL connections
 - **Migrations**: Implement versioned SQL migrations for schema management
 - **Query Building**: Leverage SQLx's compile-time query checking
 - **Error Handling**: Proper error propagation and handling
 
 ### 2. Repository Pattern (`repositories/postgres/`)
+
 - Implement repository traits defined in the domain layer
 - Execute SQLx queries against the database
 - Map database models to domain entities
@@ -34,18 +51,14 @@ persistence/
 ## Implementation Guidelines
 
 ### Technologies
+
 - **SQLx**: Async SQL toolkit with compile-time checked queries
 - **PostgreSQL**: Primary database
 - **tokio**: Async runtime (paired with SQLx)
 - **sqlx-migrations**: Database version control
 
-### Dependencies (Cargo.toml)
-```toml
-sqlx = { version = "0.7", features = ["postgres", "runtime-tokio-native-tls", "migrate"] }
-tokio = { version = "1", features = ["full"] }
-```
-
 ### Connection Pool Example
+
 ```rust
 use sqlx::postgres::PgPoolOptions;
 
@@ -58,6 +71,7 @@ pub async fn create_pool(database_url: &str) -> Result<sqlx::PgPool, sqlx::Error
 ```
 
 ### Repository Implementation Pattern
+
 ```rust
 use sqlx::PgPool;
 use crate::domain::repositories::YourRepository;
@@ -79,6 +93,7 @@ impl YourRepository for PostgresYourRepository {
 ```
 
 ## Checklist
+
 - [ ] Review domain repository traits to understand expected interfaces
 - [ ] Set up PostgreSQL connection pool initialization
 - [ ] Create SQL migration files for required schema
@@ -88,6 +103,7 @@ impl YourRepository for PostgresYourRepository {
 - [ ] Configure database connection strings in environment
 
 ## Resources
+
 - [SQLx Documentation](https://github.com/launchbadge/sqlx)
 - [SQLx Query Macros](https://github.com/launchbadge/sqlx/blob/main/sqlx-macros/README.md)
 - [PostgreSQL Type Support in SQLx](https://docs.rs/sqlx/latest/sqlx/)
