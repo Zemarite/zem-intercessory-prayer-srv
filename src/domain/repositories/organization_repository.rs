@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 
-use crate::domain::entities::organization::Organization;
+use crate::domain::entities::Organization;
 use crate::domain::errors::DomainError;
 use crate::domain::value_objects::OrganizationId;
 

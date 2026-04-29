@@ -9,7 +9,7 @@ description: "**WORKFLOW SKILL** — Implement the data persistence layer using 
 
 - **When to Invoke**: Use this skill when tasked with implementing or updating the data persistence layer, including database connections, migrations, and repository implementations. Avoid for domain logic or application services.
 - **Prerequisites**: Ensure the `domain/repositories/` traits are defined. Have database schema requirements ready for migration design.
-- **Output**: Generates Rust files for database connections, migrations, and repository implementations in the `persistence/` folder structure.
+- **Output**: Generates Rust files for database connections, migrations, repository and errors.rs implementations in the `persistence/` folder structure.
 - **Validation**: After generation, run tests and check for SQLx compile errors to ensure queries are valid.
 
 ## Project Structure
@@ -43,6 +43,8 @@ Adapt paths based on codebase conventions; use tools to verify existing structur
 - **Connection Pooling**: Use SQLx's `PgPool` for managing PostgreSQL connections
 - **Migrations**: Implement versioned SQL migrations for schema management
 - **Query Building**: Leverage SQLx's compile-time query checking
+- **DTOs and Mapping**: Create DTOs for database models and map them to domain entities
+- **Module Exports**: Organize code with clear module exports for easy imports in application services and flatening the structure for ease of use
 - **Error Handling**: Proper error propagation and handling
 
 ### 2. Repository Pattern (`repositories/postgres/`)

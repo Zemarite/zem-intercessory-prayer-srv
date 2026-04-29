@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 
-use crate::domain::entities::prayer_request::PrayerRequest;
+use crate::domain::entities::PrayerRequest;
 use crate::domain::errors::DomainError;
 use crate::domain::value_objects::{ChurchId, OrganizationId, PrayerRequestId};
 

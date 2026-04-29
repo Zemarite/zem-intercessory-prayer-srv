@@ -6,9 +6,9 @@ use crate::domain::value_objects::email::Email;
 /// Value objects are immutable and compared by value, not identity.
 #[derive(Debug, Clone, PartialEq)]
 pub struct ContactInfo {
-    pub email: Email,
-    pub phone_number: String,
-    pub preferred_contact_method: ContactMethod,
+    email: Email,
+    phone_number: String,
+    preferred_contact_method: ContactMethod,
 }
 
 impl ContactInfo {
@@ -30,6 +30,19 @@ impl ContactInfo {
             preferred_contact_method,
         })
     }
+
+    // Getters for encapsulation
+    pub fn email(&self) -> &Email {
+        &self.email
+    }
+
+    pub fn phone_number(&self) -> &str {
+        &self.phone_number
+    }
+
+    pub fn preferred_contact_method(&self) -> &ContactMethod {
+        &self.preferred_contact_method
+    }
 }
 
 #[cfg(test)]
@@ -42,9 +55,12 @@ mod tests {
         let contact_info = ContactInfo::new(email, "+1234567890".to_string(), ContactMethod::Email)
             .expect("ContactInfo validation failed");
 
-        assert_eq!(contact_info.email.value, "test@example.com");
-        assert_eq!(contact_info.phone_number, "+1234567890");
-        assert_eq!(contact_info.preferred_contact_method, ContactMethod::Email);
+        assert_eq!(contact_info.email().value, "test@example.com");
+        assert_eq!(contact_info.phone_number(), "+1234567890");
+        assert_eq!(
+            contact_info.preferred_contact_method(),
+            &ContactMethod::Email
+        );
     }
 
     #[test]

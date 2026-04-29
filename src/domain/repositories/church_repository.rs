@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 
-use crate::domain::entities::church::Church;
+use crate::domain::entities::Church;
 use crate::domain::errors::DomainError;
 use crate::domain::value_objects::{ChurchId, OrganizationId};
 
