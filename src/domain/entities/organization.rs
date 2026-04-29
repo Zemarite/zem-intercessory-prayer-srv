@@ -105,6 +105,28 @@ impl Organization {
         self.billing = new_billing;
         self.updated_at = OffsetDateTime::now_utc();
     }
+
+    /// Creates an Organization instance from raw database data.
+    /// This bypasses validation and should only be used for trusted database data.
+    pub(crate) fn from_raw(
+        id: OrganizationId,
+        name: String,
+        address: Address,
+        contact_info: ContactInfo,
+        billing: Option<BillingInfo>,
+        created_at: OffsetDateTime,
+        updated_at: OffsetDateTime,
+    ) -> Self {
+        Self {
+            id,
+            name,
+            address,
+            contact_info,
+            billing,
+            created_at,
+            updated_at,
+        }
+    }
 }
 
 impl PartialEq for Organization {

@@ -12,6 +12,9 @@ pub enum DomainError {
 
     #[from(String,&str, &String)]
     ValidationError(String),
+
+    #[display("Infrastructure error: {_0}")]
+    InfrastructureError(String),
 }
 
 // region:    --- Error Boilerplate

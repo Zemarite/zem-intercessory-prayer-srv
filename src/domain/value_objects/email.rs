@@ -1,6 +1,8 @@
+use serde::{Deserialize, Serialize};
+
 /// Represents an email address as a value object in the domain.
 /// Value objects are immutable and compared by value, not identity.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Email {
     pub value: String,
 }

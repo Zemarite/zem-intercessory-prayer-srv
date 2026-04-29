@@ -1,10 +1,11 @@
 use crate::domain::enums::PaymentMethod;
 use crate::domain::errors::{DomainError, Result};
 use crate::domain::value_objects::email::Email;
+use serde::{Deserialize, Serialize};
 
 /// Represents billing information as a value object in the domain.
 /// Value objects are immutable and compared by value, not identity.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BillingInfo {
     payment_method: PaymentMethod,
     billing_email: Email,
@@ -72,16 +73,6 @@ impl BillingInfo {
         self.tax_id.is_some()
     }
 }
-
-impl PartialEq for BillingInfo {
-    fn eq(&self, other: &Self) -> bool {
-        self.payment_method == other.payment_method
-            && self.billing_email == other.billing_email
-            && self.tax_id == other.tax_id
-    }
-}
-
-impl Eq for BillingInfo {}
 
 #[cfg(test)]
 mod tests {

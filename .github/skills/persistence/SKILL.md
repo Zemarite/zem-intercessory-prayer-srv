@@ -46,6 +46,7 @@ Adapt paths based on codebase conventions; use tools to verify existing structur
 - **DTOs and Mapping**: Create DTOs for database models and map them to domain entities
 - **Module Exports**: Organize code with clear module exports for easy imports in application services and flatening the structure for ease of use
 - **Error Handling**: Proper error propagation and handling
+    - /errors-rs infrastructure database postgres
 
 ### 2. Repository Pattern (`repositories/postgres/`)
 

@@ -1,10 +1,11 @@
 use crate::domain::enums::ContactMethod;
 use crate::domain::errors::DomainError;
 use crate::domain::value_objects::email::Email;
+use serde::{Deserialize, Serialize};
 
 /// Represents contact information as a value object in the domain.
 /// Value objects are immutable and compared by value, not identity.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ContactInfo {
     email: Email,
     phone_number: String,

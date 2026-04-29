@@ -1,5 +1,7 @@
+use serde::{Deserialize, Serialize};
+
 /// Enum representing different payment methods available for billing.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum PaymentMethod {
     CreditCard,
     DebitCard,

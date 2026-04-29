@@ -1,5 +1,7 @@
+use serde::{Deserialize, Serialize};
+
 /// Enum representing preferred contact methods.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum ContactMethod {
     Email,
     Phone,

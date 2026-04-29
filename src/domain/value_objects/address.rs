@@ -1,7 +1,9 @@
 use crate::domain::errors::DomainError;
+use serde::{Deserialize, Serialize};
+
 /// Represents an address as a value object in the domain.
 /// Value objects are immutable and compared by value, not identity.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Address {
     pub street_line1: String,
     pub street_line2: Option<String>,
