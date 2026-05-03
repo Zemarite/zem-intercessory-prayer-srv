@@ -99,6 +99,28 @@ impl Church {
         self.contact_info = new_contact_info;
         self.updated_at = OffsetDateTime::now_utc();
     }
+
+    /// Creates a Church instance from raw database data.
+    /// This bypasses validation and should only be used for trusted database data.
+    pub(crate) fn from_raw(
+        id: ChurchId,
+        name: String,
+        address: Address,
+        contact_info: ContactInfo,
+        organization_id: OrganizationId,
+        created_at: OffsetDateTime,
+        updated_at: OffsetDateTime,
+    ) -> Self {
+        Self {
+            id,
+            name,
+            address,
+            contact_info,
+            organization_id,
+            created_at,
+            updated_at,
+        }
+    }
 }
 
 impl PartialEq for Church {

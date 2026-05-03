@@ -9,8 +9,11 @@ description: "**WORKFLOW SKILL** — Implement the data persistence layer using 
 
 - **When to Invoke**: Use this skill when tasked with implementing or updating the data persistence layer, including database connections, migrations, and repository implementations. Avoid for domain logic or application services.
 - **Prerequisites**: Ensure the `domain/repositories/` traits are defined. Have database schema requirements ready for migration design.
-- **Output**: Generates Rust files for database connections, migrations, repository and errors.rs implementations in the `persistence/` folder structure.
+- **Output**: Generates Rust files in the `persistence/` folder structure for database connections, migrations, repository, and errors.rs implementations.
+- **Unit Testing**: Write unit tests for repository methods to ensure correct database interactions.
 - **Validation**: After generation, run tests and check for SQLx compile errors to ensure queries are valid.
+
+This skill provides a comprehensive workflow for implementing the data persistence layer using SQLx and PostgreSQL in pure Rust without any external ORM frameworks. It focuses on creating repository implementations that map between database models and domain entities, managing database connections, and handling migrations.
 
 ## Project Structure
 
@@ -18,7 +21,7 @@ description: "**WORKFLOW SKILL** — Implement the data persistence layer using 
 persistence/
 ├── databases/
     └── postgres/
-        └── configurations/                 # Connection pools and initialization
+        └── configurations/
         │   ├── connection.rs               # Connection pools and initialization
         │   ├── migrations.rs               # Database migrations management
         │   └── mod.rs                      # Module exports
@@ -34,101 +37,54 @@ persistence/
 
 ```
 
-Adapt paths based on codebase conventions; use tools to verify existing structure.
+## Workflow
+
+1. **Analyze Requirements**: Review domain repository traits to understand expected interfaces. Gather database schema requirements for migration design.
+2. **Set Up Connection Pool**: Implement connection pooling using SQLx's `PgPool` in `connection.rs`.
+3. **Design Migrations**: Create SQL migration files based on schema requirements and implement migration management in `migrations.rs`.
+4. **Implement Repositories**: For each domain entity, implement the corresponding repository in `repositories/postgres/`, including DTOs, mapping, and repository logic.
+5. **Handle Errors**: Define custom error types in `errors.rs` for robust error handling in the persistence layer.
+6. **Organize Modules**: Update `mod.rs` files to ensure proper module exports and imports.
+7. **Test and Validate**: Write unit tests for repository methods and run `cargo test` to validate functionality and catch SQLx compile errors.
+
+## Interactive Checklist
+
+Use this checklist to guide domain implementation. Complete each step systematically.
 
 ## Key Responsibilities
 
-### 1. Database Layer (`databases/postgres/`)
+### 1. Connection Pool
 
-- **Connection Pooling**: Use SQLx's `PgPool` for managing PostgreSQL connections
-- **Migrations**: Implement versioned SQL migrations for schema management
-- **Query Building**: Leverage SQLx's compile-time query checking
-- **DTOs and Mapping**: Create DTOs for database models and map them to domain entities
-- **Module Exports**: Organize code with clear module exports for easy imports in application services and flatening the structure for ease of use
-- **Error Handling**: Proper error propagation and handling
-    - /errors-rs infrastructure database postgres
+- [ ] Implement connection pooling using SQLx's `PgPool` for efficient database connections.
+- [ ] Configure database connection strings securely using environment variables or configuration files.
 
-### 2. Repository Pattern (`repositories/postgres/`)
+### 2. Migrations
 
-- Implement repository traits defined in the domain layer
-- Execute SQLx queries against the database
-- Map database models to domain entities
-- Handle transaction management where needed
+- [ ] Create SQL migration files for database schema management.
+- [ ] Implement migration management logic to apply migrations in order.
+
+### 3. Repository Implementations
+
+- [ ] Defined in the domain layer, implement repository traits for each entity in the `repositories/postgres/` folder.
+- [ ] Implement repository traits defined in the domain layer for each entity.
+- [ ] Create DTOs for database models and map them to domain entities.
+- [ ] Use SQLx macros for compile-time checked queries in repository methods.
+- [ ] Ensure proper error handling and propagation in repository methods.
+- [ ] Define custom error types in `errors.rs` for robust error handling in the persistence layer.
+- [ ] Write integration tests for repository operations to validate database interactions.
+
+### 4. Module Exports
+
+- [ ] Organize code with clear module exports for easy imports in application services and flatening the structure for ease of use
+- [ ] Update `mod.rs` files to ensure all necessary modules are exported correctly.
+
+### 5. Testing and Validation
+
+- [ ] Write unit tests for repository constructors, methods, and invariants to ensure correct database interactions.
+- [ ] Run `cargo test` to validate functionality and catch SQLx compile errors.
+- [ ] Ensure tests cover edge cases, such as handling database connection failures or invalid queries.
 
 ## Implementation Guidelines
-
-### Technologies
-
-- **SQLx**: Async SQL toolkit with compile-time checked queries
-- **PostgreSQL**: Primary database
-- **tokio**: Async runtime (paired with SQLx)
-- **sqlx-migrations**: Database version control
-
-### Dependencies
-
-Add the following to your `Cargo.toml`:
-
-```toml
-[dependencies]
-sqlx = { version = "0.8.6", features = ["postgres", "runtime-tokio", "macros"] }
-tokio = { version = "1.52.1", features = ["full"] }
-async-trait = "0.1"
-```
-
-### Connection Pool Example
-
-```rust
-use sqlx::postgres::PgPoolOptions;
-
-pub async fn create_pool(database_url: &str) -> Result<sqlx::PgPool, sqlx::Error> {
-    PgPoolOptions::new()
-        .max_connections(5)
-        .connect(database_url)
-        .await
-}
-```
-
-### Repository Implementation Pattern
-
-```rust
-use sqlx::PgPool;
-use crate::domain::repositories::YourRepository;
-
-pub struct PostgresYourRepository {
-    pool: PgPool,
-}
-
-impl PostgresYourRepository {
-    pub fn new(pool: PgPool) -> Self {
-        Self { pool }
-    }
-}
-
-#[async_trait::async_trait]
-impl YourRepository for PostgresYourRepository {
-    async fn find_by_id(&self, id: i32) -> Result<Option<YourEntity>, PersistenceError> {
-        sqlx::query_as!(YourEntity, "SELECT * FROM your_table WHERE id = $1", id)
-            .fetch_optional(&self.pool)
-            .await
-            .map_err(PersistenceError::from)
-    }
-    // Implement other trait methods using sqlx queries
-}
-```
-
-### Migration Example
-
-Create a migration file in `migrations/` (e.g., `001_create_users.sql`):
-
-```sql
--- Create users table
-CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
 
 ## Checklist
 
